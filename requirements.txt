@@ -1,0 +1,9 @@
+# torch: install the build matching your hardware (Jetson: JetPack wheel; Colab/Kaggle: preinstalled)
+transformers>=5.0
+peft>=0.17
+trl>=1.0
+datasets>=4.0
+accelerate>=1.0
+pandas
+# optional, GPU-only quantization benchmark (quantize_bench.py)
+bitsandbytes

@@ -1,0 +1,74 @@
+{
+  "name": "base",
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "adapter": null,
+  "data": "data/eval.jsonl",
+  "strict_format_rate": 0.15666666666666668,
+  "lenient_parse_rate": 0.4666666666666667,
+  "model_lenient": {
+    "n": 300,
+    "coverage": 0.4666666666666667,
+    "mae": 2.232142857142857,
+    "within_0_5": 0.15714285714285714,
+    "exact": 0.05
+  },
+  "baseline_mode": {
+    "band": 7.0,
+    "n": 300,
+    "coverage": 1.0,
+    "mae": 1.1633333333333333,
+    "within_0_5": 0.37666666666666665,
+    "exact": 0.17333333333333334
+  },
+  "baseline_mean": {
+    "band": 6.5,
+    "n": 300,
+    "coverage": 1.0,
+    "mae": 1.0633333333333332,
+    "within_0_5": 0.4266666666666667,
+    "exact": 0.11
+  },
+  "batch_latency_s_mean": 2.4315542746052365,
+  "samples": [
+    {
+      "gold": 7.0,
+      "out": "```json\n{\"overall\": 8.7}\n```"
+    },
+    {
+      "gold": 7.5,
+      "out": "```json\n{\"overall\": 8.5}\n```"
+    },
+    {
+      "gold": 7.0,
+      "out": "{\"overall\": 8.5}"
+    },
+    {
+      "gold": 6.0,
+      "out": "```json\n{\"overall\": 8.5}\n```"
+    },
+    {
+      "gold": 6.5,
+      "out": "```json\n{\n  \"overall\": 8.75\n}\n```"
+    },
+    {
+      "gold": 5.0,
+      "out": "```json\n{\"overall\": 8.5}\n```"
+    },
+    {
+      "gold": 5.5,
+      "out": "```json\n{\n  \"overall\": 8.5\n}\n```"
+    },
+    {
+      "gold": 6.5,
+      "out": "```json\n{\n  \"overall\": 8.75\n}\n```"
+    },
+    {
+      "gold": 5.0,
+      "out": "```json\n{\"overall\": 8.7}\n```"
+    },
+    {
+      "gold": 7.0,
+      "out": "```json\n{\"overall\": 8.5}\n```"
+    }
+  ]
+}

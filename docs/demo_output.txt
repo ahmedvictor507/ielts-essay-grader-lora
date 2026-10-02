@@ -1,0 +1,10 @@
+loading model ...
+
+PROMPT: Some people believe that universities should focus on providing practical skills for employment, while others think academic knowledge is more important. Discuss both views and give your own opinion.
+
+essay_weak   "Nowadays many people go to university..."
+  -> {"overall": 4.5}   (195 words, 0.69s)
+essay_mid    "The role of universities has long been debated..."
+  -> {"overall": 6.5}   (229 words, 0.69s)
+essay_strong "The question of whether higher education should serve primarily as voc..."
+  -> {"overall": 7.5}   (262 words, 0.71s)

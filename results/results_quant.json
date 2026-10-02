@@ -1,0 +1,41 @@
+[
+  {
+    "variant": "fp16",
+    "model_mb": 942.3,
+    "peak_gpu_mb": 1042.9,
+    "strict_format_rate": 1.0,
+    "mae": 0.955,
+    "within_0_5": 0.46,
+    "pearson_r": 0.4257789063274454,
+    "latency_mean_s": 0.3276100172099359,
+    "latency_p99_s": 0.4781392490003782,
+    "ms_per_token": 36.40111302332621,
+    "n": 100
+  },
+  {
+    "variant": "int8",
+    "model_mb": 601.0,
+    "peak_gpu_mb": 703.0,
+    "strict_format_rate": 1.0,
+    "mae": 0.94,
+    "within_0_5": 0.48,
+    "pearson_r": 0.45698165217351827,
+    "latency_mean_s": 1.3650774277100755,
+    "latency_p99_s": 1.784209486000691,
+    "ms_per_token": 151.67526974556392,
+    "n": 100
+  },
+  {
+    "variant": "nf4",
+    "model_mb": 430.4,
+    "peak_gpu_mb": 552.8,
+    "strict_format_rate": 1.0,
+    "mae": 1.035,
+    "within_0_5": 0.49,
+    "pearson_r": 0.433014831540273,
+    "latency_mean_s": 0.46206267134000883,
+    "latency_p99_s": 0.6249250729997584,
+    "ms_per_token": 51.340296815556535,
+    "n": 100
+  }
+]

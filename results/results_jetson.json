@@ -1,0 +1,17 @@
+{
+  "device": "Orin",
+  "model": "model-0.5B",
+  "dtype": "fp16",
+  "n": 50,
+  "mean_prompt_tokens": 469.88,
+  "model_mb": 942.3,
+  "peak_gpu_mb": 986.3,
+  "latency_mean_s": 0.7061876429384575,
+  "latency_p99_s": 0.7918824880034663,
+  "ttft_mean_s": 0.11732122292276471,
+  "decode_ms_per_token": 73.60830250196159,
+  "strict_format_rate": 1.0,
+  "mae": 0.83,
+  "within_0_5": 0.56,
+  "pearson_r": 0.4505830445652736
+}
