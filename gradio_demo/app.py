@@ -18,7 +18,7 @@ MODEL_ID = os.environ.get("MODEL_ID", "Viktor507/ielts-band-predictor-0.5b")
 GITHUB = "https://github.com/ahmedvictor507/ielts-essay-grader-lora"
 EX = Path(__file__).resolve().parent.parent / "examples"
 
-model, tok = load(MODEL_ID, device="cpu")
+model, tok = load(MODEL_ID)  # GPU if available (about 0.7 s/essay on a Jetson), otherwise CPU
 
 DISCLAIMER = f"""
 **Read this first.** This predicts an **overall band only** and was trained on **model-generated labels**, not examiner scores.
@@ -27,7 +27,7 @@ It rates surface fluency and **does not check that the essay answers the questio
 repeated are refused by rule-based checks, and off-topic text is only *warned about*.
 Details, results and failure modes: [GitHub]({GITHUB}).
 
-<sub>Runs on CPU: expect roughly 10–30 s per essay.</sub>
+<sub>On CPU expect roughly 10–30 s per essay; on a GPU under a second.</sub>
 """
 
 
