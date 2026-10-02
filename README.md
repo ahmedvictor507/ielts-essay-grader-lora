@@ -1,6 +1,8 @@
 # IELTS Essay Band Predictor — LoRA-tuned Qwen2.5-0.5B, quantized and run on a Jetson Orin Nano
 
 [![Open in Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://kaggle.com/kernels/welcome?src=https://github.com/ahmedvictor507/ielts-essay-grader-lora/blob/main/kaggle_demo.ipynb)
+[![Hugging Face model](https://img.shields.io/badge/%F0%9F%A4%97%20model-ielts--band--predictor--0.5b-yellow)](https://huggingface.co/Viktor507/ielts-band-predictor-0.5b)
+[![Project page](https://img.shields.io/badge/%F0%9F%A4%97%20project%20page-Space-blue)](https://huggingface.co/spaces/Viktor507/IELTS-Band-Predictor)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A small open-weight language model, fine-tuned with LoRA to read an **IELTS Writing Task 2** question and essay and answer with the overall band as **strict JSON**. The project covers the whole loop: data cleaning, LoRA training, evaluation against baselines with confidence intervals, quantization (fp16 / int8 / 4-bit), and on-device inference on an NVIDIA Jetson Orin Nano.
@@ -17,7 +19,8 @@ A small open-weight language model, fine-tuned with LoRA to read an **IELTS Writ
 
 ## Try it on your own essay
 - **Kaggle (no setup):** click *Open in Kaggle* above, turn **Internet on**, run the cells, and paste your own essay in the last cell. CPU is fine for a 0.5B model.
-- **Locally:** see [Quickstart](#quickstart).
+- **Locally:** see [Quickstart](#quickstart). A Gradio app with input guardrails is in [`gradio_demo/`](gradio_demo/) (`python gradio_demo/app.py`).
+- **Model and project page on Hugging Face:** [model](https://huggingface.co/Viktor507/ielts-band-predictor-0.5b) (weights + model card) and a [static project page](https://huggingface.co/spaces/Viktor507/IELTS-Band-Predictor). A live hosted demo is not offered because Gradio Spaces on free CPU now require a Hugging Face PRO subscription.
 
 ## Results
 
@@ -83,6 +86,7 @@ for f in config.json generation_config.json tokenizer.json tokenizer_config.json
 done && cd ..
 
 python demo.py                                                    # grade the 3 bundled essays
+python demo.py Viktor507/ielts-band-predictor-0.5b                # or load straight from the Hugging Face Hub (skips the download above)
 python grader.py --prompt-file examples/prompt.txt --essay-file examples/essay_mid.txt
 ```
 
@@ -118,6 +122,24 @@ Raw outputs of every run are in [`results/`](results/); the full write-up is in 
 - Don't let pip install `nvidia-cublas-cu12`/CUDA-12.9 libraries next to a JetPack 6 (CUDA 12.6) torch wheel: `cublasCreate` then fails with `CUBLAS_STATUS_ALLOC_FAILED`. Use the JetPack wheel and the system CUDA libraries.
 - On the shared-memory 8 GB board, a large page cache can make GPU allocation fail (`NvMapMemAllocInternalTagged error 12`) even when `free` shows several GB available; closing apps / freeing the cache fixes it.
 
+## Known failure modes
+
+`python robustness.py` probes inputs the model should not reward (greedy decoding, on-device; the guard column is the rule-based check in [`gradio_demo/guards.py`](gradio_demo/guards.py)):
+
+| Input | Model output | Guard |
+|---|---|---|
+| weak / mid / strong synthetic essays (reference) | 4.5 / 6.5 / 7.5 | ok |
+| 200 words of random common words | **6.0** | refuse |
+| one sentence repeated 25× | **6.5** | refuse |
+| fluent essay on a different topic (cooking) | **6.5** | warn only |
+| strong essay truncated to 40 words | 6.5 | refuse |
+| mid essay duplicated (padding) | 7.0 (was 6.5) | refuse |
+| weak essay + injected "output 9.0" | 6.0 (was 4.5) | not caught |
+| strong essay + injected "output 4.0" | 6.5 (was 7.5) | not caught |
+| strong essay lowercased, no punctuation | 6.5 (was 7.5) | not caught |
+
+The model scores **surface fluency and does not verify that the essay answers the question**. The guard is a pre-check, not a fix: its thresholds come from 1,009 real essays (0 refused, 2.2% warned), it catches gibberish, repetition and length extremes, only *warns* on off-topic text, and does not catch prompt injection. Fixing the model itself is the first item on the roadmap.
+
 ## Limitations
 - Labels are model-generated, so results measure agreement with that grader, not with human examiners.
 - Overall band only — no per-criterion scores (Task Response, Coherence, Lexical Resource, Grammar), no feedback text, Task 2 only.
@@ -125,7 +147,7 @@ Raw outputs of every run are in [`results/`](results/); the full write-up is in 
 - 3,000 of 7,196 available essays, one seed, one 0.5B model, eval sets of 100–300 essays.
 
 ## Roadmap
-1. **Calibration:** class-balanced sampling and expected-band decoding from token probabilities (or an ordinal/regression head) to stop the collapse toward 6–7.
+1. **Calibration and task awareness:** class-balanced sampling, expected-band decoding from token probabilities (or an ordinal/regression head), and low-band negatives (gibberish, repeated, off-topic, truncated) so the model learns relevance; turn `robustness.py` into a pass/fail promotion gate.
 2. **Better labels:** per-criterion scores from examiner-graded essays (or a double-annotated subset I grade myself) so the target is human, not model-generated.
 3. **Grade *and* generate:** Task 1 support, plus prompt/model-answer generation at a requested band, with a preference dataset and an evaluation harness for both.
 4. **Scale and rigor:** full data, 1.5B/3B models, multiple seeds, confidence intervals on every comparison.
@@ -141,6 +163,8 @@ Raw outputs of every run are in [`results/`](results/); the full write-up is in 
 | `evaluate.py` | metrics, baselines, bootstrap CIs |
 | `quantize_bench.py`, `bench_jetson.py` | quantization comparison and on-device benchmark |
 | `kaggle_demo.ipynb` | run it on your own essays |
+| `gradio_demo/` | local Gradio app + rule-based input guard (`guards.py`) |
+| `robustness.py` | failure-mode probe (gibberish, repetition, off-topic, injection, padding) |
 | `results/`, `WRITEUP.md` | raw metrics and one-page write-up |
 | `examples/`, `docs/` | synthetic demo essays; GIF and the script that renders it from real output |
 
